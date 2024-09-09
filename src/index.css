@@ -1,13 +1,465 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.cdnfonts.com/css/sf-pro-display");
+
 body {
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "SF Pro Display", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+.custom-font {
+  font-family: "SF Pro Display", sans-serif;
+}
+
+.search-input {
+  background: #ffffff;
+  box-shadow: 0px 0px 17.9px -2px rgba(0, 0, 0, 0.25);
+  padding: 10px 20px;
+  border-radius: 29px;
+  font-size: 20px;
+  width: 100%;
+  border-width: 0;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+  box-shadow: 0px 0px 17.9px 0px rgba(0, 0, 0, 0.4);
+  border-width: 0;
+  outline: none;
+}
+
+.search-input::placeholder {
+  opacity: 50%;
+}
+
+.search-input-second {
+  background: #ffffff;
+  padding: 10px 20px;
+  border-radius: 29px;
+  border: 3px solid #05b49b;
+  font-size: 20px;
+  width: 100%;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-input-second:focus {
+  outline: none;
+}
+
+.arrow-icon {
+  width: 26px;
+  height: 26px;
+}
+
+/* .upload-files-container {
+  box-shadow: 0px 4px 49.5px -11px #00000040;
+  width: 444px;
+  border-radius: 22px;
+  height: 550px;
+} */
+
+.upload-files-container {
+  box-shadow: 0px 4px 49.5px -11px #00000040;
+  width: 440px; /* Default width for larger screens */
+  border-radius: 22px;
+  height: 550px;
+}
+
+/* Media query for small screens */
+@media (max-width: 768px) {
+  /* Adjust the max-width value as needed for your breakpoints */
+  .upload-files-container {
+    width: 100%; /* Set width to a percentage to ensure it fits within small screens */
+    max-width: 440px; /* Optional: limit maximum width on small screens */
+    height: 550px; /* Allow height to adjust based on content */
+  }
+}
+
+.plus-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.upload-files-container input {
+  border-bottom: 1px solid #000000;
+  width: 100%;
+  padding-left: 5px;
+  outline: none;
+  font-size: 20px;
+}
+
+.upload-files-container input:focus {
+  border-bottom: 1px solid #000000 !important;
+}
+
+.upload-files-container input::placeholder {
+  opacity: 50%;
+}
+
+.btn-secondary {
+  background-color: #05b49b;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 17px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #d9d9d9 transparent;
+}
+
+.print-details-item {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 11px;
+  background-color: #5c5c5c;
+  cursor: pointer;
+  position: relative; /* For positioning the icon */
+  overflow: hidden;
+}
+
+.print-details-item p {
+  font-size: 22px;
+}
+
+.print-details-item .cross-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.print-details-item:hover .cross-icon {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.btn-main {
+  background-color: #3d0cff !important;
+}
+
+.plan-container {
+  box-shadow: 0px 4px 47.8px -9px #00000040;
+}
+
+.plan-items li {
+  font-size: 15px;
+  font-weight: 500;
+  color: #8a8787;
+}
+
+.font-35 {
+  font-size: 35px;
+}
+
+.upload-files-container-second {
+  box-shadow: 0px 4px 49.5px -11px #00000040;
+  width: 444px;
+  border-radius: 22px;
+}
+
+.upload-files-container-second input {
+  border-bottom: 1px solid #000000;
+  width: 100%;
+  padding-left: 5px;
+  outline: none;
+  font-size: 20px;
+}
+
+.upload-files-container-second input:focus {
+  border-bottom: 1px solid #000000 !important;
+}
+
+.upload-files-container-second input::placeholder {
+  opacity: 50%;
+}
+
+.add-print-details-item {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 11px;
+  background-color: #05b49b;
+  cursor: pointer;
+  position: relative; /* For positioning the icon */
+  overflow: hidden;
+}
+
+.add-print-details-item .cross-icon {
+  opacity: 1;
+}
+
+.add-print-details-item .title-txt {
+  font-size: 18px;
+}
+
+.add-print-details-item .status-txt {
+  font-size: 14px;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.btn-primary {
+  background-color: #05b49b;
+}
+
+.text-ittalic {
+  font-size: 12px;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.price-input {
+  border-width: 0px;
+  outline: none;
+}
+
+.price-input-container {
+  border: 3px solid #05b49b;
+}
+
+.btn-primary:hover {
+  background-color: #057867;
+}
+
+.font-18 {
+  font-size: 18px;
+}
+
+.table-main-container {
+  border: 2px solid #ffffff;
+  box-shadow: 0px 4px 15.5px 2px #00000040;
+}
+
+.btn-delete {
+  background-color: #d9d9d9;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.btn-delete:hover {
+  background-color: #b0afaf;
+}
+
+.table-footer-t {
+  border-top: 0.5px solid #000000;
+}
+
+.table-header-b {
+  border-bottom: 0.5px solid #000000;
+}
+
+.bg-grey {
+  background: #bfbfbf;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 10px;
+  align-items: center;
+  display: flex;
+  height: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pay-online-btn {
+  background-color: #05b49b;
+  padding-left: 20px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 20px;
+  color: white;
+}
+
+.pay-online-btn:hover {
+  background-color: #057867;
+}
+
+.total-txt {
+  font-weight: 700;
+  font-size: 20;
+  color: black;
+}
+
+.bg-primary {
+  background-color: #05b49b;
+}
+
+.bg-secondary {
+  background-color: #057867;
+}
+
+.bg-light-green {
+  background-color: #03ffdb;
+}
+
+.font-20 {
+  font-size: 20px;
+}
+
+.font-25 {
+  font-size: 25px;
+}
+
+.custom-quote-container {
+  border: 3px solid #05b49b;
+  padding: 10px;
+  margin-bottom: 50px;
+}
+
+.request-textarea {
+  border: 2px solid #05b49b;
+  padding: 8px;
+  resize: vertical;
+  width: 100%;
+  min-height: 250px;
+  max-height: 250px;
+  outline: none;
+}
+
+.font-15 {
+  font-size: 15px;
+}
+
+.border-primary {
+  border: 2px solid #05b49b;
+}
+
+.text-primary {
+  color: #05b49b;
+}
+
+.sort-by {
+  background-color: #05b49b;
+  color: white;
+  font-size: 12px;
+}
+
+.horizontal-divider {
+  width: 100%;
+  height: 2px;
+  background-color: black;
+}
+
+.download-fles-btn {
+  background-color: #05b49b;
+  padding-left: 20px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.download-fles-btn:hover {
+  background-color: #057867;
+}
+
+.service-type-input {
+  outline: none;
+}
+
+.text-primary {
+  color: #05b49b;
+}
+
+.edit-border-top {
+  border-top: 1px solid white;
+}
+
+.edit-border-bottom {
+  border-bottom: 1px solid white;
+}
+
+.date-input {
+  /* Hide default calendar icon */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  appearance: none; /* For other browsers */
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  display: none; /* Hide the calendar icon in WebKit browsers */
+}
+
+.spinner {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #05b49b;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.status-hover:hover {
+  background-color: #057867;
+}
+
+.quantity-input {
+  border: 3px solid #05b49b;
+  width: 220px;
+  border-radius: 7px;
+  outline: none;
+}
+
+.typing-container {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.cursor {
+  display: inline-block;
+  width: 1px;
+  background-color: black;
+}
+
+.cursor.visible {
+  visibility: visible;
+}
+
+.cursor.invisible {
+  visibility: hidden;
 }
