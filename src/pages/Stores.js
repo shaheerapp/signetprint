@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import L from "leaflet"; // Import Leaflet library
 
 
 const Stores = () => {
@@ -25,6 +26,32 @@ const Stores = () => {
 
         fetchUsers();
     }, []);
+
+    // Initialize Leaflet map
+    useEffect(() => {
+        let map; // Declare the map variable
+
+        // Check if map is already initialized, to prevent reinitialization
+        if (!map) {
+            map = L.map('map').setView([-33.9321, 18.8602], 13);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([-33.9321, 18.8602]).addTo(map)
+                .bindPopup('The Office Crew')
+                .openPopup();
+        }
+
+        // Cleanup function to remove the map instance when the component unmounts
+        return () => {
+            if (map) {
+                map.remove();
+            }
+        };
+    }, []); // Ensure this effect only runs once when the component mounts
+
 
     const handleSearch = (e) => {
         setSearchQuery(e.target.value.toLowerCase());
@@ -102,16 +129,8 @@ const Stores = () => {
                 ))}
 
                 <div className="mt-5 mb-8 ml-8 mr-8">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d65329596.35425801!2d-1.5935244376091786!3d1.9941110947760508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1c34a689d9ee1251%3A0xe85d630c1fa4e8a0!2sSouth%20Africa!5e0!3m2!1sen!2s!4v1725860216984!5m2!1sen!2s"
-                        width="100%"
-                        height="300"
-                        frameborder="0"
-                        style={{ border: 0 }}
-                        allowfullscreen=""
-                        aria-hidden="false"
-                        tabindex="0"
-                    />
+                    {/* Leaflet Map */}
+                    <div id="map" style={{ height: "300px" }}></div>
                 </div>
 
             </div>

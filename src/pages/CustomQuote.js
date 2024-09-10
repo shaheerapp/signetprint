@@ -13,6 +13,9 @@ const CustomQuote = () => {
     const [request, setRequest] = useState('');
     const [success, setSuccess] = useState(false);
 
+    const handleBack = () => {
+        window.history.back(); // Navigates back in the browser's history
+    }
 
     const handleSendRequest = async () => {
         if (printRequestId) {
@@ -71,7 +74,7 @@ const CustomQuote = () => {
                         class="flex justify-between text-white shadow-inner rounded p-3 bg-green-400"
                     >
                         <p class="self-center">
-                            <strong>Custom Quote Created Successfully </strong>
+                            <strong>⁠Your custom request has been noted and will be added to your print job once you complete the "Print Now" request. Next, click on "Continue to submit order.</strong>
                         </p>
                         <button
                             onClick={() => setSuccess(false)}>
@@ -170,7 +173,14 @@ const CustomQuote = () => {
                                     Send Request
                                 </button>
                             </div>
+
                         </div>
+                        <button
+                            onClick={handleBack}
+                            className="pay-online-btn rounded-md mt-10"
+                        >
+                            ⁠Continue to submit your order
+                        </button>
                     </div>
                 </div>
             </div>

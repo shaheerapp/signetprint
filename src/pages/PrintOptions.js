@@ -241,25 +241,6 @@ const PrintOptions = () => {
                         <h2 className="font-bold mb-4 font-35">{storeName}</h2>
                         <div className="bg-white upload-files-container-second mt-4 flex flex-col pb-5 h-auto">
                             <div className="p-6 pl-8 pr-8">
-                                <div className="flex items-center space-x-3">
-                                    <div
-                                        className="plus-icon-1 rounded-full items-center justify-center flex"
-                                        style={{ backgroundColor: COLORS.secondary }}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={3}
-                                            stroke={COLORS.white}
-                                            className="size-5"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                        </svg>
-                                    </div>
-                                    <span className='text-2xl custom-font font-normal text-black' style={{ fontSize: 30 }}>
-                                        Upload Files
-                                    </span>
-                                </div>
                                 {/* Full Name Input */}
                                 <label htmlFor="email" className="block text-xs font-medium text-gray-700 mt-6 pl-1.5" style={{ marginBottom: '-5px' }}>Email</label>
                                 <input
@@ -428,7 +409,7 @@ const PrintOptions = () => {
                             onClick={updatePrice}
                             className="mr-5 btn-primary h-11 text-white text-ittalic rounded-full flex items-center justify-center px-4 py-2"
                         >
-                            Update Price for {currentPdfIndex + 1} PDF
+                            Update Price for PDF #{currentPdfIndex + 1}
                         </button>
                     </div>
                 </div>
