@@ -38,6 +38,7 @@ const PrintOptions = () => {
     const { printRequestId } = location.state || {};
     const [pricingData, setPricingData] = useState([]);
     const navigate = useNavigate();
+    const [currentPdfIndex, setCurrentPdfIndex] = useState(0);
 
     useEffect(() => {
         const fetchUserByStoreID = async () => {
@@ -69,61 +70,84 @@ const PrintOptions = () => {
 
 
     const calculatePrice = () => {
-        let total = 0;
-
         if (files.length > 0 && paperSize && colour && pricingData.length > 0) {
-            // Iterate through each file and calculate the price
-            const updatedFiles = files.map((file) => {
-                const { pageCount } = file;
 
-                // Find the pricing item based on paperSize and color
-                const pricing = pricingData.find(
-                    (item) => item.paperSize === paperSize && item.color === colour
-                );
+            // Ensure the current index is within the bounds of the files array
+            if (currentPdfIndex < 0 || currentPdfIndex >= files.length) {
+                console.error("Invalid currentPdfIndex:", currentPdfIndex);
+                return;
+            }
 
-                if (pricing) {
-                    // Find the price range that matches the pageCount
-                    const priceRange = pricing.priceRanges.find((range) => {
-                        // Parse page ranges
-                        const [minPages, maxPages] = range.pages.split('-').map((str) => {
-                            return parseInt(str.replace(/\D/g, ''), 10); // Convert to number
-                        });
+            // Make a copy of the current file state
+            const updatedFiles = [...files];
 
-                        // Check if pageCount falls within the range
-                        return pageCount >= minPages && (maxPages ? pageCount <= maxPages : true);
+            const currentFile = updatedFiles[currentPdfIndex];
+            const { pageCount } = currentFile;
+
+            // Find the pricing item based on paperSize and color
+            const pricing = pricingData.find(
+                (item) => item.paperSize === paperSize && item.color === colour
+            );
+
+            if (pricing) {
+                // Find the price range that matches the pageCount
+                const priceRange = pricing.priceRanges.find((range) => {
+                    const [minPages, maxPages] = range.pages.split('-').map((str) => {
+                        return parseInt(str.replace(/\D/g, ''), 10); // Convert to number
                     });
 
-                    if (priceRange) {
-                        // Calculate the price for the file
-                        const filePrice = priceRange.price * pageCount * quantity;
-                        total += filePrice;
+                    // Check if pageCount falls within the range
+                    return pageCount >= minPages && (maxPages ? pageCount <= maxPages : true);
+                });
 
-                        // Return the file with the calculated price
-                        return { ...file, price: filePrice, paperSize, colour, quantity };
+                if (priceRange) {
+                    // Calculate the price for the current file
+                    const filePrice = priceRange.price * pageCount * quantity;
 
-                    }
+                    // Update the price for the current file
+                    updatedFiles[currentPdfIndex] = { ...currentFile, price: filePrice, paperSize, colour, quantity };
+
+                    // Update the files state with the new price for the current file
+                    setFiles(updatedFiles);
+
+                    // Calculate the total price for all files
+                    const totalPrice = updatedFiles.reduce((acc, file) => acc + (file.price || 0), 0);
+                    setTotalPrice(totalPrice);
+                } else {
+                    console.error('No matching price range found for this file');
                 }
-
-                // If no matching pricing found, return the file with price as 0
-                return { ...file, price: 0, paperSize, colour, quantity };
-            });
-
-            // Update the files state with the calculated prices
-            setFiles(updatedFiles);
-            setTotalPrice(total);
+            } else {
+                console.error('No matching pricing data found');
+            }
         } else {
             console.error('Missing data for price calculation');
         }
     };
 
+    const updatePrice = () => {
+        calculatePrice();
+        setCurrentPdfIndex((prevIndex) => Math.min(prevIndex + 1, files.length - 1));
+    }
 
     const handleDateClick = () => {
         document.getElementById('printNeed').showPicker();
     };
 
     const handlePrintNowBtn = () => {
+        console.log(files);
         if (files.length > 0 && colour && paperSize && totalPrice) {
-            navigate('/print-details', { state: { printRequestId, files, colour, paperSize, totalPrice } })
+            // Check if any file has a price of 0
+            const hasPriceGreaterThan0 = files.some(file => file.price > 0);
+            console.log(hasPriceGreaterThan0);
+
+            if (hasPriceGreaterThan0) {
+                // If all prices are valid, navigate to the next page
+                navigate('/print-details', {
+                    state: { printRequestId, files, colour, paperSize, totalPrice }
+                });
+            } else {
+                alert('One or more files have a price of 0. Please ensure that all prices are calculated.');
+            }
         } else {
             alert('Please ensure that all the options for your print has been entered.');
         }
@@ -297,8 +321,9 @@ const PrintOptions = () => {
                                         {/* Button Section */}
                                         <button
                                             className="ml-2 btn-primary h-12 text-white text-ittalic rounded-lg flex items-center justify-center px-4 py-2"
+                                            onClick={() => setCurrentPdfIndex(index)}
                                         >
-                                            Add Print<br />Details
+                                            Change Print<br />Details
                                         </button>
                                         <div
                                             className="ml-2"
@@ -400,10 +425,10 @@ const PrintOptions = () => {
                         />
                         <div className="mb-4" />
                         <button
-                            onClick={calculatePrice}
+                            onClick={updatePrice}
                             className="mr-5 btn-primary h-11 text-white text-ittalic rounded-full flex items-center justify-center px-4 py-2"
                         >
-                            Update Price
+                            Update Price for {currentPdfIndex + 1} PDF
                         </button>
                     </div>
                 </div>

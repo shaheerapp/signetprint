@@ -90,7 +90,7 @@ const HeadOfficePrintDetails = () => {
                                                     <td className="py-2 px-4">
                                                         <div className="flex items-center justify-center space-x-3">
                                                             <p className="bg-grey text-lg flex-1">{file.name}</p>
-                                                            <p className="bg-grey text-sm flex-1">{file.paperSize},{file.colour}</p>
+                                                            <p className="bg-grey text-sm flex-1">{file.paperSize},{file.colour},{file.quantity} Copies</p>
                                                             <a
                                                                 href={file.url}
                                                                 download={file.name}

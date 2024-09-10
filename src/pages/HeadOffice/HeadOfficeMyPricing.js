@@ -58,7 +58,6 @@ const HeadOfficeMyPricing = () => {
                                     <th className="py-2 px-4 w-1/7">251-500 pgs</th>
                                     <th className="py-2 px-4 w-1/7">501-1000 pgs</th>
                                     <th className="py-2 px-4 w-1/7">1000+ pgs</th>
-                                    <th className="py-2 px-4 w-1/8"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,7 +79,7 @@ const HeadOfficeMyPricing = () => {
                                                 {range.price}
                                             </td>
                                         ))}
-                                        <td className="py-2 px-4 relative">
+                                        {/* <td className="py-2 px-4 relative">
                                             <div
                                                 onClick={() => toggleExpand(index)}
                                                 className={`w-28 relative cursor-pointer text-center text-white rounded-t-xl bg-primary font-bold text-lg ${expandedRow !== index ? 'rounded-b-xl' : ''}`}
@@ -97,7 +96,7 @@ const HeadOfficeMyPricing = () => {
                                                     <button className="w-[90%] font-medium text-center text-white pt-1 mb-2 edit-border-top edit-border-bottom text-sm">Edit Row</button>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>

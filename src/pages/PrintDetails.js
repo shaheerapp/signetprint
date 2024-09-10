@@ -102,7 +102,7 @@ const PrintDetails = () => {
                                                     </p>
                                                 </div>
                                             </td>
-                                            <td className="py-2 px-4">{file.quantity} Unit</td>
+                                            <td className="py-2 px-4">{file.quantity} Copies</td>
                                             <td className="py-2 px-4">R {file.price}</td>
                                         </tr>
                                     ))
