@@ -234,17 +234,18 @@ const Home = () => {
                                     onChange={(event) => setEmailAddress(event.target.value)}
                                     className="block border-0 py-1.5 bg-white pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full"
                                 />
-                                <label htmlFor="dateNeededBy" className="block text-xs font-medium text-gray-700 mt-6 pl-1.5">Date Needed By</label>
+                                {/* Print Needed By Input */}
+                                <label htmlFor="printNeed" className="block text-xs font-medium text-gray-700 mt-6 pl-1.5" >Date needed by</label>
                                 <input
                                     name="printNeed"
-                                    id="dateNeededBy"
+                                    id="printNeed"
                                     type="date"
                                     value={printNeed}
                                     onChange={(event) => setPrintNeed(event.target.value)}
-                                    style={{ minHeight: '40px' }}
-                                    className="mt-2 date-input bg-white block border-0 py-1 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full"
+                                    onClick={handleDateClick}
+                                    placeholder="Date Needed By"
+                                    className="date-input block border-0 py-1.5 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full"
                                 />
-
                                 <div className="flex items-center space-x-3 cursor-pointer mt-6" onClick={toggleDropdown}>
                                     <div className="plus-icon rounded-full items-center justify-center flex" style={{ backgroundColor: COLORS.secondary }}>
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth={3} stroke={COLORS.white} className="size-8">
