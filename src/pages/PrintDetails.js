@@ -55,7 +55,6 @@ const PrintDetails = () => {
             email: emailAddress,     // Customer email
             amount: totalPrice * 100, // Amount in Kobo (ZAR * 100)
             currency: 'ZAR',         // Currency
-            subaccount: 'ACCT_y1bc6aimcpyeoop',
             onSuccess: async (transaction) => {
                 const reference = transaction.reference;
 
