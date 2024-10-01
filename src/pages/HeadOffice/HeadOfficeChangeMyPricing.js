@@ -6,55 +6,55 @@ import { db } from '../../firebase/firebaseConfig';
 
 const HeadOfficeChangeMyPricing = () => {
     const [request, setRequest] = useState(`Here is the example CSV as exported from Excel for the default store pricing. You may edit it to suit your store, else explain your store pricing thoroughly:
-Paper Size,Color,Page Range,Price
-A4,B/W,1-10 pgs,2.5
-A4,B/W,11-50 pgs,2
-A4,B/W,51-250 pgs,1.8
-A4,B/W,251-500 pgs,1.5
-A4,B/W,501-1000 pgs,1.2
-A4,B/W,1000+ pgs,1
-A4,Color,1-10 pgs,10
-A4,Color,11-50 pgs,8
-A4,Color,51-250 pgs,6.5
-A4,Color,251-500 pgs,6.5
-A4,Color,501-1000 pgs,6.5
-A4,Color,1000+ pgs,6.5
-A3,B/W,1-10 pgs,5
-A3,B/W,11-50 pgs,4
-A3,B/W,51-250 pgs,3
-A3,B/W,251-500 pgs,2.5
-A3,B/W,501-1000 pgs,2
-A3,B/W,1000+ pgs,1.8
-A3,Color,1-10 pgs,20
-A3,Color,11-50 pgs,18
-A3,Color,51-250 pgs,15
-A3,Color,251-500 pgs,13
-A3,Color,501-1000 pgs,12
-A3,Color,1000+ pgs,10
-A2,B/W,1-10 pgs,55
-A2,B/W,11-50 pgs,55
-A2,B/W,51-250 pgs,55
-A2,B/W,251-500 pgs,55
-A2,B/W,501-1000 pgs,55
-A2,B/W,1000+ pgs,55
-A2,Color,1-10 pgs,80
-A2,Color,11-50 pgs,80
-A2,Color,51-250 pgs,80
-A2,Color,251-500 pgs,80
-A2,Color,501-1000 pgs,80
-A2,Color,1000+ pgs,80
-A1,B/W,1-10 pgs,68
-A1,B/W,11-50 pgs,68
-A1,B/W,51-250 pgs,68
-A1,B/W,251-500 pgs,68
-A1,B/W,501-1000 pgs,68
-A1,B/W,1000+ pgs,68
-A1,Color,1-10 pgs,135
-A1,Color,11-50 pgs,135
-A1,Color,51-250 pgs,135
-A1,Color,251-500 pgs,135
-A1,Color,501-1000 pgs,135
-A1,Color,1000+ pgs,135`);
+Paper Size, Color, Page Range, Price
+A4, B/W, 1-10 pgs, 2.5
+A4, B/W, 11-50 pgs, 2
+A4, B/W, 51-250 pgs, 1.8
+A4, B/W, 251-500 pgs, 1.5
+A4, B/W, 501-1000 pgs, 1.2
+A4, B/W, 1000+ pgs, 1
+A4, Color, 1-10 pgs, 10
+A4, Color, 11-50 pgs, 8
+A4, Color, 51-250 pgs, 6.5
+A4, Color, 251-500 pgs, 6.5
+A4, Color, 501-1000 pgs, 6.5
+A4, Color, 1000+ pgs, 6.5
+A3, B/W, 1-10 pgs, 5
+A3, B/W, 11-50 pgs, 4
+A3, B/W, 51-250 pgs, 3
+A3, B/W, 251-500 pgs, 2.5
+A3, B/W, 501-1000 pgs, 2
+A3, B/W, 1000+ pgs, 1.8
+A3, Color, 1-10 pgs, 20
+A3, Color, 11-50 pgs, 18
+A3, Color, 51-250 pgs, 15
+A3, Color, 251-500 pgs, 13
+A3, Color, 501-1000 pgs, 12
+A3, Color, 1000+ pgs, 10
+A2, B/W, 1-10 pgs, 55
+A2, B/W, 11-50 pgs, 55
+A2, B/W, 51-250 pgs, 55
+A2, B/W, 251-500 pgs, 55
+A2, B/W, 501-1000 pgs, 55
+A2, B/W, 1000+ pgs, 55
+A2, Color, 1-10 pgs, 80
+A2, Color, 11-50 pgs, 80
+A2, Color, 51-250 pgs, 80
+A2, Color, 251-500 pgs, 80
+A2, Color, 501-1000 pgs, 80
+A2, Color, 1000+ pgs, 80
+A1, B/W, 1-10 pgs, 68
+A1, B/W, 11-50 pgs, 68
+A1, B/W, 51-250 pgs, 68
+A1, B/W, 251-500 pgs, 68
+A1, B/W, 501-1000 pgs, 68
+A1, B/W, 1000+ pgs, 68
+A1, Color, 1-10 pgs, 135
+A1, Color, 11-50 pgs, 135
+A1, Color, 51-250 pgs, 135
+A1, Color, 251-500 pgs, 135
+A1, Color, 501-1000 pgs, 135
+A1, Color, 1000+ pgs, 135`);
     const [user, setUser] = useState([]);
     const navigate = useNavigate();
     const [isSubmited, setIsSubmited] = useState(false);

@@ -1,25 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/CustomToggleButton.css";
 
-const CustomToggleButton = ({ label, handleSaveState }) => {
-    const [selected, setSelected] = useState(null);
+const CustomToggleButton = ({ label, handleSaveState, defaultSelection = 'No', disableYes = false }) => {
+    const [selected, setSelected] = useState(defaultSelection);
+
+    useEffect(() => {
+        if (label === 'Colour') {
+            handleSaveState(selected === 'Yes' ? 'Color' : 'B/W');
+        }
+    }, [])
 
     const handleSelection = (value) => {
+        if (value === 'Yes' && disableYes) return;
         setSelected(value);
         if (label === 'Colour') {
-            if (value === 'Yes') {
-                handleSaveState('Color');
-            } else if (value === 'No') {
-                handleSaveState('B/W');
-            }
+            handleSaveState(value === 'Yes' ? 'Color' : 'B/W');
         } else {
-            if (value === 'Yes') {
-                handleSaveState('Yes');
-            } else if (value === 'No') {
-                handleSaveState('No');
-            }
+            handleSaveState(value === 'Yes' ? 'Yes' : 'No');
         }
-
     };
 
     return (
@@ -27,8 +25,9 @@ const CustomToggleButton = ({ label, handleSaveState }) => {
             <label className="toggle-label">{label}</label>
             <div className="button-group">
                 <button
-                    className={`toggle-button ${selected === "Yes" ? "selected" : ""}`}
+                    className={`toggle-button ${selected === "Yes" ? "selected" : ""} ${disableYes ? "disabled" : ""}`}
                     onClick={() => handleSelection("Yes")}
+                    disabled={disableYes}
                 >
                     Yes
                 </button>

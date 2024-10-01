@@ -114,23 +114,23 @@ const Dashboard = () => {
                                                 <p>Custom Quote</p>
                                             </div>
                                         }
-                                        <p className="font-25 text-black font-bold">{job.files[0].name}</p>
+                                        <p className="font-25 text-white font-bold">{job.files[0].name}</p>
                                         <div className='horizontal-divider' />
                                         <div className='flex items-center mt-2 space-x-1'>
-                                            <p className="font-18 text-black font-medium">Email Address:</p>
-                                            <p className="font-18 text-black font-bold">{job.customer_email}</p>
+                                            <p className="font-18 text-white font-medium">Email Address:</p>
+                                            <p className="font-18 text-white font-bold">{job.customer_email}</p>
                                         </div>
                                         <div className='flex items-center mt-2 space-x-1'>
-                                            <p className="font-18 text-black font-medium">Needed by:</p>
-                                            <p className="font-18 text-black font-bold">{job.printNeed}</p>
+                                            <p className="font-18 text-white font-medium">Needed by:</p>
+                                            <p className="font-18 text-white font-bold">{job.printNeed}</p>
                                         </div>
                                         <div className='flex items-center mt-2 space-x-1'>
-                                            <p className="font-18 text-black font-medium">Status:</p>
-                                            <p className="font-18 text-black font-bold">{job.status}</p>
+                                            <p className="font-18 text-white font-medium">Status:</p>
+                                            <p className="font-18 text-white font-bold">{job.status}</p>
                                         </div>
                                         <div className='flex items-center mt-2 space-x-1'>
-                                            <p className="font-18 text-black font-medium">Cost:</p>
-                                            <p className="font-18 text-black font-bold">R {job.totalPrice}</p>
+                                            <p className="font-18 text-white font-medium">Cost:</p>
+                                            <p className="font-18 text-white font-bold">R {job.totalPrice}</p>
                                         </div>
                                         <div className='flex items-center mt-2 space-x-1'>
 

@@ -14,22 +14,18 @@ const PrintOptions = () => {
     const printTypeOptions = ["Normal", "Booklet", "Canvas", "Flyer", "Poster", "Custom"];
     const paperSizeOptions = ["A1", "A2", "A3", "A4"];
     const paperThicknessOptions = [
-        "80-100 GSM: Everyday office printing",
-        "120-140 GSM: Brochures, flyers, posters",
-        "160-170 GSM: Brochures, high-quality flyers",
-        "200-250 GSM: Document covers, business cards",
-        "300+ GSM: Greeting cards, packaging",
+        "80 GSM: Normal", "90 GSM", "100 GSM"
     ];
     const [totalPrice, setTotalPrice] = useState(0);
     const [emailAddress, setEmailAddress] = useState('');
     const [printNeed, setPrintNeed] = useState('');
-    const [printType, setPrintType] = useState('');
+    const [printType, setPrintType] = useState('Normal');
     const [paperSize, setPaperSize] = useState('');
     const [files, setFiles] = useState([]);
     const [status, setStatus] = useState('');
-    const [colour, setColour] = useState('');
-    const [doubleSided, setDoubleSided] = useState(false);
-    const [binding, setBinding] = useState(false);
+    const [colour, setColour] = useState('B/W');
+    const [doubleSided, setDoubleSided] = useState('No');
+    const [binding, setBinding] = useState('No');
     const [paperThickness, setPaperThickness] = useState('');
     const [quantity, setQuantity] = useState(1);
     const location = useLocation();
@@ -143,7 +139,7 @@ const PrintOptions = () => {
             if (hasPriceGreaterThan0) {
                 // If all prices are valid, navigate to the next page
                 navigate('/print-details', {
-                    state: { printRequestId, files, colour, paperSize, totalPrice }
+                    state: { printRequestId, files, totalPrice, emailAddress }
                 });
             } else {
                 alert('One or more files have a price of 0. Please ensure that all prices are calculated.');
@@ -382,15 +378,33 @@ const PrintOptions = () => {
                         className="flex-1 flex-col flex"
                     >
                         <h2 className="font-bold mb-4 font-35">Details</h2>
-                        <CustomSelector label="Print Type" options={printTypeOptions} handleSaveState={setPrintType} />
+                        <CustomSelector
+                            label="Print Type"
+                            options={printTypeOptions}
+                            defaultOption="Normal"
+                            disabledOptions={["Booklet", "Canvas", "Flyer", "Poster", "Custom"]}
+                            handleSaveState={setPrintType}
+                        />
                         <div className="mb-4" />
                         <CustomSelector label="Paper Size" options={paperSizeOptions} handleSaveState={setPaperSize} />
                         <div className="mb-4" />
-                        <CustomToggleButton label="Colour" handleSaveState={setColour} />
+                        <CustomToggleButton
+                            label="Colour"
+                            handleSaveState={setColour}
+                            disableYes={false}
+                        />
                         <div className="mb-4" />
-                        <CustomToggleButton label="Double Sided" handleSaveState={setDoubleSided} />
+                        <CustomToggleButton
+                            label="Double Sided"
+                            handleSaveState={setDoubleSided}
+                            disableYes={false}
+                        />
                         <div className="mb-4" />
-                        <CustomToggleButton label="Binding" handleSaveState={setBinding} />
+                        <CustomToggleButton
+                            label="Binding"
+                            handleSaveState={setBinding}
+                            disableYes={true}
+                        />
                         <div className="mb-4" />
                         <CustomSelector label="Paper Thickness" options={paperThicknessOptions} handleSaveState={setPaperThickness} />
                         <div className="mb-4" />

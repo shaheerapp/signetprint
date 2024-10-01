@@ -92,3 +92,9 @@
   opacity: 0;
   transition: max-height 300ms ease-in, opacity 300ms ease-in;
 }
+
+.dropdown-item.disabled {
+  color: grey;
+  text-decoration: line-through;
+  pointer-events: none;
+}

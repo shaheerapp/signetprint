@@ -2,18 +2,20 @@ import React, { useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import "../css/customselector.css";
 
-const CustomSelector = ({ label, options, handleSaveState }) => {
+const CustomSelector = ({ label, options, handleSaveState, defaultOption, disabledOptions = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState();
+    const [selectedOption, setSelectedOption] = useState(defaultOption);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
     const selectOption = (option) => {
-        setSelectedOption(option);
-        handleSaveState(option)
-        setIsOpen(false);
+        if (!disabledOptions.includes(option)) {
+            setSelectedOption(option);
+            handleSaveState(option);
+            setIsOpen(false);
+        }
     };
 
     return (
@@ -34,7 +36,7 @@ const CustomSelector = ({ label, options, handleSaveState }) => {
                         {options.map((option, index) => (
                             <div
                                 key={index}
-                                className="dropdown-item"
+                                className={`dropdown-item ${disabledOptions.includes(option) ? 'disabled' : ''}`}
                                 onClick={() => selectOption(option)}
                             >
                                 {option}

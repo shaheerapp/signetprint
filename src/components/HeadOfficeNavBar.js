@@ -10,7 +10,7 @@ import { useDashboard } from '../pages/HeadOffice/DashboardContext';
 const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard' },
     { name: 'My Pricing', href: '/admin/my-pricing' },
-    { name: 'Past Jobs', href: '/admin/past-jobs' },
+    { name: 'Closed Jobs', href: '/admin/closed-jobs' },
     { name: 'Logout', href: '#' }, // We'll handle logout via onClick
 ];
 

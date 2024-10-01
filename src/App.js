@@ -85,7 +85,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/past-jobs"
+          path="/admin/closed-jobs"
           element={
             <PrivateRoute>
               <HeadOfficePastJobs />

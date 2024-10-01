@@ -32,3 +32,8 @@
   border-color: #05b49b;
   color: white;
 }
+
+.toggle-button.disabled {
+  color: grey;
+  pointer-events: none;
+}

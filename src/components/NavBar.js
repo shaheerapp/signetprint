@@ -6,7 +6,7 @@ import { IMAGES } from '../utils/images'
 
 const navigation = [
     { name: 'List your Print Shop', href: '/pricing' },
-    { name: 'Store Login', href: '/shop-login' },
+    { name: 'Shop Login', href: '/shop-login' },
     { name: 'My Printing Jobs', href: '/printing-jobs' },
 ]
 

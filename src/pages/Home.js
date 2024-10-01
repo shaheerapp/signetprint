@@ -208,7 +208,7 @@ const Home = () => {
                 <meta name="twitter:card" content="summary_large_image" />
             </Helmet>
             <NavBar />
-            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 pb-5" style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>
+            <div className="relative isolate min-h-screen px-2 pt-8 md:px-10 lg:px-40 pb-5" style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>
                 <div className="py-10 sm:py-20">
                     <a href='/stores'>
                         <input
