@@ -10,7 +10,7 @@ const Pricing = () => {
 
     // Plan prices in kobo (Naira) or cents for Paystack (amount should be multiplied by 100)
     const plans = [
-        { name: 'Basic', price: 450, description: ['500 Print Jobs per month', 'Basic Print Jobs', 'Email Support'], link: 'https://paystack.com/pay/cagfddw61j' },
+        { name: 'Basic', price: 299, description: ['Basic Print Jobs', 'Email Support'], link: 'https://paystack.com/pay/cagfddw61j' },
         { name: 'Standard', price: 599, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support'], link: 'https://paystack.com/pay/nactjaak1y' },
         { name: 'Enterprise', price: 949, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support', 'Key Metric Tracking'], link: 'https://paystack.com/pay/yzzx61yjyb' },
     ];
