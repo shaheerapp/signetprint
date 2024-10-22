@@ -58,7 +58,8 @@ const Stores = () => {
     };
 
     const handlePrintNow = (user) => {
-        navigate('/', { state: { selectedUser: user.storeName } });
+        const storeName = user.storeName ? encodeURIComponent(user.storeName) : ""; // Optional storeName
+        navigate(`/${storeName}`);
     };
 
     const filteredUsers = users.filter(user =>
@@ -70,13 +71,13 @@ const Stores = () => {
         <div className="bg-white">
             <NavBar />
             <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40">
-                <div className="py-10 sm:py-10">
+                <div className="py-12 sm:py-20">
                     <input
                         name="search"
                         type="text"
                         id="search"
                         placeholder="Search for Printing stores / Areas"
-                        className="block border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input-second"
+                        className="block border-0 text-md lg:text-lg py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input-second"
                         value={searchQuery}
                         onChange={handleSearch}
                     />

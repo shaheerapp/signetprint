@@ -4,13 +4,13 @@ import { useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { COLORS } from "../utils/theme";
-import PaystackPop from '@paystack/inline-js';
 
 
 const PrintDetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { printRequestId, files, totalPrice, emailAddress } = location.state || {};
+
+    const { printRequestId, files, totalPrice, emailAddress, subAccountCode } = location.state || {};
     const [isSubmited, setIsSubmited] = useState('');
 
     const handleBack = () => {
@@ -49,38 +49,58 @@ const PrintDetails = () => {
 
 
     const handlePayOnlineClick = async () => {
-        const paystack = new PaystackPop();
-        paystack.newTransaction({
-            key: 'pk_live_2fbdde74ea2ec4e3290c5bae7b06757c107a015c', // replace with your Paystack public key
-            email: emailAddress,     // Customer email
-            amount: totalPrice * 100, // Amount in Kobo (ZAR * 100)
-            currency: 'ZAR',         // Currency
-            onSuccess: async (transaction) => {
-                const reference = transaction.reference;
+        try {
+            if (printRequestId) {
+                // Reference to the document in Firestore
+                const docRef = doc(db, 'print_requests', printRequestId);
+                const docSnap = await getDoc(docRef);
 
-                // Update Firestore with payment success
-                if (printRequestId) {
-                    const docRef = doc(db, 'print_requests', printRequestId);
+                if (docSnap.exists()) {
+
                     await updateDoc(docRef, {
-                        status: 'Received',
-                        paymentReference: reference
+                        files: files,
+                        totalPrice: totalPrice,
                     });
-                    setIsSubmited('online');
+
+                } else {
+                    console.error('No such document!');
                 }
-            },
-            onCancel: () => {
-                alert('Payment cancelled');
+                const response = await fetch('https://api.paystack.co/transaction/initialize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer sk_test_6387dfc884da169e373d841492096eaa2ed84b2f`
+                    },
+                    body: JSON.stringify({
+                        email: emailAddress,     // Customer email
+                        amount: totalPrice * 100, // Amount in Kobo (ZAR * 100)
+                        subaccount: subAccountCode,
+                        currency: 'ZAR',
+                        callback_url: `https://signet-print.web.app/verify-online-payment?printRequestId=${printRequestId}`,
+                    })
+                });
+
+                const data = await response.json();
+                if (data.status) {
+                    // Redirect to Paystack payment link
+                    window.location.href = data.data.authorization_url;
+                } else {
+                    console.error('Transaction initialization failed:', data.message);
+                }
             }
-        });
+        } catch (error) {
+            console.error('Error initializing transaction:', error);
+        }
+
     };
 
 
 
     return (
-        <div className="bg-white">
+        <div className="bg-white min-h-screen">
             <NavBar />
-            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 pb-5">
-                <div className="py-10 sm:py-20">
+            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40">
+                <div className="py-12 sm:py-20">
                     <a
                         href='/stores'
                     >
@@ -89,19 +109,19 @@ const PrintDetails = () => {
                             type="text"
                             readOnly
                             placeholder="Search for Printing stores / Areas"
-                            className="block cursor-pointer border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
+                            className="block cursor-pointer text-md lg:text-lg border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
                         />
                     </a>
                 </div>
             </div>
             <div
-                className="flex flex-col items-center justify-center text-center h-full"
+                className="flex-col items-center justify-center text-center h-full"
             >
                 <h2 className="font-bold mb-8 font-35">Print Details</h2>
 
                 <div className="min-w-full px-2 pt-1 md:px-10 lg:px-40">
                     <div
-                        className="bg-white table-main-container mx-5 rounded-3xl"
+                        className="bg-white table-main-container mx-5 rounded-3xl overflow-x-auto"
                     >
                         {/* Table */}
                         <table className="min-w-full bg-white text-left rounded-3xl">
@@ -120,7 +140,7 @@ const PrintDetails = () => {
                                                 <div
                                                     className="flex items-center justify-center">
                                                     <p
-                                                        className="bg-grey text-lg flex-1 mr-4"
+                                                        className="bg-grey text-lg flex-1 mr-4 truncate"
                                                     >
                                                         {file.name}
                                                     </p>
@@ -142,7 +162,7 @@ const PrintDetails = () => {
                         </table>
 
                         <div
-                            className="table-footer-t mt-5 mb-5 flex items-center justify-end mr-10 pt-5"
+                            className="table-footer-t mt-5 mb-5 flex items-center justify-end mr-10 pt-5 ml-5"
                         >
                             <div
                                 className="mr-5 "
@@ -155,6 +175,7 @@ const PrintDetails = () => {
                                 <button
                                     onClick={handlePayOnlineClick}
                                     className="pay-online-btn rounded-md mt-2"
+                                    style={{ backgroundColor: 'grey' }}
                                 >
                                     Pay Online
                                 </button>
@@ -186,42 +207,33 @@ const PrintDetails = () => {
                 </button>
             </div>
             {isSubmited && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50" style={{ marginTop: 0 }}>
-                    <div className="bg-white p-4 rounded-md shadow-lg ml-5 mr-5 text-center">
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50 p-4">
+                    <div className="bg-white p-4 rounded-md shadow-lg w-full sm:max-w-md lg:max-w-5xl text-center mx-auto">
                         <div className="cross-icon flex justify-end">
-                            <span
-                                onClick={() => setIsSubmited('')}
-                                className="cursor-pointer"
-                            >
+                            <span onClick={() => setIsSubmited('')} className="cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke={COLORS.black} className="w-5 h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </span>
-
                         </div>
-                        {
-                            isSubmited === 'store' ?
-                                <p className="text-lg font-medium text-center">
-                                    Thank you for your order! <br></br>
-                                    We've received your PDF, email, and desired pickup date. Please remember to bring your payment with you when you come to pick up your order.
-                                </p>
-                                :
-                                <p className="text-lg font-medium text-center">
-                                    Thank you for your order! <br></br>
-                                    We've received your PDF, email, and desired pickup date. You may come collect your order on the given pickup date.
-                                </p>
+                        {isSubmited === 'store' ? (
+                            <p className="text-lg font-medium">
+                                Thank you for your order! <br />
+                                We've received your PDF, email, and desired pickup date. Please remember to bring your payment with you when you come to pick up your order.
+                            </p>
+                        ) : (
+                            <p className="text-lg font-medium">
+                                Thank you for your order! <br />
+                                We've received your PDF, email, and desired pickup date. You may come collect your order on the given pickup date.
+                            </p>
+                        )}
 
-                        }
-
-
-                        <button
-                            onClick={handleReturn}
-                            className="pay-online-btn rounded-md mt-10"
-                        >
+                        <button onClick={handleReturn} className="pay-online-btn rounded-md mt-10">
                             Return to Home
                         </button>
                     </div>
                 </div>
+
             )}
         </div>
     )

@@ -11,8 +11,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const PrintOptions = () => {
-    const printTypeOptions = ["Normal", "Booklet", "Canvas", "Flyer", "Poster", "Custom"];
-    const paperSizeOptions = ["A1", "A2", "A3", "A4"];
+    const printTypeOptions = ["Normal", "Building Plans", "Booklet", "Canvas", "Flyer", "Poster", "Custom"];
+    const paperSizeOptions = ["A0", "A1", "A2", "A3", "A4"];
     const paperThicknessOptions = [
         "80 GSM: Normal", "90 GSM", "100 GSM"
     ];
@@ -26,13 +26,15 @@ const PrintOptions = () => {
     const [colour, setColour] = useState('B/W');
     const [doubleSided, setDoubleSided] = useState('No');
     const [binding, setBinding] = useState('No');
-    const [paperThickness, setPaperThickness] = useState('');
+    const [paperThickness, setPaperThickness] = useState('80 GSM: Normal');
     const [quantity, setQuantity] = useState(1);
     const location = useLocation();
     const [storeName, setStoreName] = useState();
     const [storeID, setStoreID] = useState();
+    const [subAccountCode, setSubAccountCode] = useState('');
     const { printRequestId } = location.state || {};
     const [pricingData, setPricingData] = useState([]);
+    const [buildingPlansPricingData, setBuildingPlansPricingData] = useState([]);
     const navigate = useNavigate();
     const [currentPdfIndex, setCurrentPdfIndex] = useState(0);
 
@@ -50,6 +52,8 @@ const PrintOptions = () => {
                     if (!querySnapshot.empty) {
                         const userData = querySnapshot.docs[0].data();
                         setPricingData(userData.pricing);
+                        setBuildingPlansPricingData(userData.buildingPlanPricing);
+                        setSubAccountCode(userData.subaccountCode)
                     } else {
                         console.log('No user found with the provided storeID');
                     }
@@ -66,58 +70,125 @@ const PrintOptions = () => {
 
 
     const calculatePrice = () => {
-        if (files.length > 0 && paperSize && colour && pricingData.length > 0) {
+        if (printType === "Building Plans") {
+            if (files.length > 0 && paperSize && colour && buildingPlansPricingData.length > 0) {
 
-            // Ensure the current index is within the bounds of the files array
-            if (currentPdfIndex < 0 || currentPdfIndex >= files.length) {
-                console.error("Invalid currentPdfIndex:", currentPdfIndex);
-                return;
-            }
+                // Ensure the current index is within the bounds of the files array
+                if (currentPdfIndex < 0 || currentPdfIndex >= files.length) {
+                    console.error("Invalid currentPdfIndex:", currentPdfIndex);
+                    return;
+                }
 
-            // Make a copy of the current file state
-            const updatedFiles = [...files];
+                // Make a copy of the current file state
+                const updatedFiles = [...files];
 
-            const currentFile = updatedFiles[currentPdfIndex];
-            const { pageCount } = currentFile;
+                const currentFile = updatedFiles[currentPdfIndex];
+                const { pageCount } = currentFile;
 
-            // Find the pricing item based on paperSize and color
-            const pricing = pricingData.find(
-                (item) => item.paperSize === paperSize && item.color === colour
-            );
+                // Find the pricing item based on color type (e.g., "B/W" or "Color")
+                const pricing = buildingPlansPricingData.find(item => item.type === colour); // Here, assuming 'colour' contains the type like 'B/W' or 'Color'
 
-            if (pricing) {
-                // Find the price range that matches the pageCount
-                const priceRange = pricing.priceRanges.find((range) => {
-                    const [minPages, maxPages] = range.pages.split('-').map((str) => {
-                        return parseInt(str.replace(/\D/g, ''), 10); // Convert to number
-                    });
+                if (pricing) {
+                    // Find the size pricing based on the selected paper size
+                    const sizePricing = pricing.sizes.find(sizeItem => sizeItem.size === paperSize);
 
-                    // Check if pageCount falls within the range
-                    return pageCount >= minPages && (maxPages ? pageCount <= maxPages : true);
-                });
+                    if (sizePricing) {
+                        // Calculate the price for the current file
+                        const filePrice = sizePricing.price * pageCount * quantity; // Assuming quantity is defined elsewhere
 
-                if (priceRange) {
-                    // Calculate the price for the current file
-                    const filePrice = priceRange.price * pageCount * quantity;
+                        // Update the price for the current file
+                        updatedFiles[currentPdfIndex] = {
+                            ...currentFile,
+                            price: filePrice,
+                            paperSize,
+                            colour,
+                            quantity,
+                            doubleSided,
+                            binding,
+                            paperThickness,
+                            printType
+                        };
 
-                    // Update the price for the current file
-                    updatedFiles[currentPdfIndex] = { ...currentFile, price: filePrice, paperSize, colour, quantity };
+                        // Update the files state with the new price for the current file
+                        setFiles(updatedFiles);
 
-                    // Update the files state with the new price for the current file
-                    setFiles(updatedFiles);
-
-                    // Calculate the total price for all files
-                    const totalPrice = updatedFiles.reduce((acc, file) => acc + (file.price || 0), 0);
-                    setTotalPrice(totalPrice);
+                        // Calculate the total price for all files
+                        const totalPrice = updatedFiles.reduce((acc, file) => acc + (file.price || 0), 0);
+                        setTotalPrice(totalPrice);
+                    } else {
+                        console.error('No matching price range found for this file');
+                    }
                 } else {
-                    console.error('No matching price range found for this file');
+                    console.error('No matching pricing data found');
                 }
             } else {
-                console.error('No matching pricing data found');
+                console.error('Missing data for price calculation');
             }
         } else {
-            console.error('Missing data for price calculation');
+            if (files.length > 0 && paperSize && colour && pricingData.length > 0) {
+
+                // Ensure the current index is within the bounds of the files array
+                if (currentPdfIndex < 0 || currentPdfIndex >= files.length) {
+                    console.error("Invalid currentPdfIndex:", currentPdfIndex);
+                    return;
+                }
+
+                // Make a copy of the current file state
+                const updatedFiles = [...files];
+
+                const currentFile = updatedFiles[currentPdfIndex];
+                const { pageCount } = currentFile;
+
+                // Find the pricing item based on paperSize and color
+                const pricing = pricingData.find(
+                    (item) => item.paperSize === paperSize && item.color === colour
+                );
+
+                if (pricing) {
+                    // Find the price range that matches the pageCount
+                    const priceRange = pricing.priceRanges.find((range) => {
+                        const [minPages, maxPages] = range.pages.split('-').map((str) => {
+                            return parseInt(str.replace(/\D/g, ''), 10); // Convert to number
+                        });
+
+                        // Check if pageCount falls within the range
+                        return pageCount >= minPages && (maxPages ? pageCount <= maxPages : true);
+                    });
+
+                    if (priceRange) {
+                        // Calculate the price for the current file
+                        const filePrice = priceRange.price * pageCount * quantity;
+
+                        // Update the price for the current file
+                        updatedFiles[currentPdfIndex] = {
+                            ...currentFile,
+                            price: filePrice,
+                            paperSize,
+                            colour,
+                            quantity,
+                            doubleSided,
+                            binding,
+                            paperThickness,
+                            printType,
+                        };
+
+                        // Update the files state with the new price for the current file
+                        setFiles(updatedFiles);
+
+                        // Calculate the total price for all files
+                        const totalPrice = updatedFiles.reduce((acc, file) => acc + (file.price || 0), 0);
+                        setTotalPrice(totalPrice);
+                    } else {
+                        console.error('No matching price range found for this file');
+                    }
+                } else {
+                    console.error('No matching pricing data found');
+                }
+            } else {
+                console.error('Missing data for price calculation');
+            }
         }
+
     };
 
     const updatePrice = () => {
@@ -131,15 +202,14 @@ const PrintOptions = () => {
 
     const handlePrintNowBtn = () => {
         console.log(files);
-        if (files.length > 0 && colour && paperSize && totalPrice) {
+        if (files.length > 0 && colour && paperSize && totalPrice && binding && doubleSided && paperThickness) {
             // Check if any file has a price of 0
             const hasPriceGreaterThan0 = files.some(file => file.price > 0);
-            console.log(hasPriceGreaterThan0);
 
             if (hasPriceGreaterThan0) {
                 // If all prices are valid, navigate to the next page
                 navigate('/print-details', {
-                    state: { printRequestId, files, totalPrice, emailAddress }
+                    state: { printRequestId, files, totalPrice, emailAddress, subAccountCode }
                 });
             } else {
                 alert('One or more files have a price of 0. Please ensure that all prices are calculated.');
@@ -212,8 +282,8 @@ const PrintOptions = () => {
     return (
         <div className="bg-white">
             <NavBar />
-            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 pb-5">
-                <div className="py-10 sm:py-20">
+            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40">
+                <div className="py-12 sm:py-20">
                     <a
                         href='/stores'
                     >
@@ -231,11 +301,11 @@ const PrintOptions = () => {
                 >
                     <h2 className="font-bold mb-8 font-35">Print Options</h2>
                 </div>
-                <div className="flex flex-col md:flex-row">
+                <div className="parent-container flex flex-col md:flex-row">
                     {/* Column 8 */}
                     <div className="flex-1 flex-col flex" style={{ flex: 3 }}>
                         <h2 className="font-bold mb-4 font-35">{storeName}</h2>
-                        <div className="bg-white upload-files-container-second mt-4 flex flex-col pb-5 h-auto">
+                        <div className="bg-white upload-files-container-second mt-4 pb-5 h-auto">
                             <div className="p-6 pl-8 pr-8">
                                 {/* Full Name Input */}
                                 <label htmlFor="email" className="block text-xs font-medium text-gray-700 mt-6 pl-1.5" style={{ marginBottom: '-5px' }}>Email</label>
@@ -258,16 +328,26 @@ const PrintOptions = () => {
                                     onChange={(event) => setPrintNeed(event.target.value)}
                                     onClick={handleDateClick}
                                     placeholder="Date Needed By"
-                                    className="date-input block border-0 py-1.5 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full"
+                                    className="date-input block border-0 py-1.5 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full bg-white"
                                 />
                             </div>
                         </div>
-                        <div className="mt-8">
+                        <div
+                            className="mt-8"
+                        >
                             {
                                 files.map((file, index) => (
-                                    <div key={index} className="add-print-details-item-container flex items-center mt-3">
+                                    <div
+                                        key={index}
+                                        className="add-print-details-item-container flex items-center mt-3 p-1"
+                                        style={{
+                                            border: currentPdfIndex === index ? '2px solid #05b49b' : 'none',
+                                            borderRadius: '5px',
+                                            backgroundColor: currentPdfIndex === index && '#c0fcf4'
+                                        }}
+                                    >
                                         {/* Details Section */}
-                                        <div className="flex-1 add-print-details-item " style={{ minHeight: '3rem' }}>
+                                        <div className="flex-1 add-print-details-item " style={{ minHeight: '3.5rem', maxHeight: '3.5rem', overflow: 'auto' }}>
                                             <div>
                                                 <p
                                                     className="text-white title-txt break-words"
@@ -277,23 +357,7 @@ const PrintOptions = () => {
                                                 </p>
                                                 <p className="text-white" style={{ fontSize: '12px' }}>Page count: {file.pageCount}</p>
                                             </div>
-                                            {/* <p className="text-white status-txt">{status}</p>
-                                        <div className="cross-icon">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke={COLORS.white}
-                                                className="w-5 h-5"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
-                                        </div> */}
+
                                         </div>
                                         {/* Button Section */}
                                         <button
@@ -307,7 +371,7 @@ const PrintOptions = () => {
                                         >
                                             {
                                                 index === 0 &&
-                                                <label htmlFor="price" className="block text-md font-medium text-gray-700 mb-2" style={{ marginTop: '-30px' }}>Price</label>
+                                                <label htmlFor="price" className="block text-md font-medium text-gray-700 mb-2" style={{ marginTop: '-35px' }}>Price</label>
 
                                             }
                                             <div className="flex items-center price-input-container rounded-md pl-2">
@@ -348,7 +412,7 @@ const PrintOptions = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="add-print-details-item-container flex items-center mt-5">
+                        <div className="add-print-details-item-container flex items-center mt-5 mb-5">
                             {/* Details Section */}
                             <div className="flex-1 h-11" />
                             {/* Button Section */}
@@ -375,7 +439,7 @@ const PrintOptions = () => {
 
                     {/* Column 4 */}
                     <div
-                        className="flex-1 flex-col flex"
+                        className="flex-1 flex-col flex ml-5"
                     >
                         <h2 className="font-bold mb-4 font-35">Details</h2>
                         <CustomSelector
@@ -386,7 +450,11 @@ const PrintOptions = () => {
                             handleSaveState={setPrintType}
                         />
                         <div className="mb-4" />
-                        <CustomSelector label="Paper Size" options={paperSizeOptions} handleSaveState={setPaperSize} />
+                        <CustomSelector
+                            label="Paper Size"
+                            options={paperSizeOptions}
+                            disabledOptions={printType === "Building Plans" ? ["A3", "A4"] : ["A0"]}
+                            handleSaveState={setPaperSize} />
                         <div className="mb-4" />
                         <CustomToggleButton
                             label="Colour"
@@ -397,7 +465,7 @@ const PrintOptions = () => {
                         <CustomToggleButton
                             label="Double Sided"
                             handleSaveState={setDoubleSided}
-                            disableYes={false}
+                            disableYes={printType === "Building Plans" ? true : false}
                         />
                         <div className="mb-4" />
                         <CustomToggleButton
@@ -406,7 +474,11 @@ const PrintOptions = () => {
                             disableYes={true}
                         />
                         <div className="mb-4" />
-                        <CustomSelector label="Paper Thickness" options={paperThicknessOptions} handleSaveState={setPaperThickness} />
+                        <CustomSelector
+                            label="Paper Thickness"
+                            options={paperThicknessOptions}
+                            defaultOption="80 GSM: Normal"
+                            handleSaveState={setPaperThickness} />
                         <div className="mb-4" />
                         <label className="selector-label">Number of copies</label>
                         <input
@@ -421,7 +493,7 @@ const PrintOptions = () => {
                         <div className="mb-4" />
                         <button
                             onClick={updatePrice}
-                            className="mr-5 btn-primary h-11 text-white text-ittalic rounded-full flex items-center justify-center px-4 py-2"
+                            className="mr-5 btn-primary h-11 mb-5 text-white text-ittalic rounded-full flex items-center justify-center px-4 py-2"
                         >
                             Update Price for PDF #{currentPdfIndex + 1}
                         </button>

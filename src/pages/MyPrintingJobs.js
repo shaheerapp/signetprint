@@ -40,57 +40,51 @@ const MyPrintingJobs = () => {
     return (
         <div className="bg-white">
             <NavBar />
-            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 pb-5 sm:py-30">
-                <div className="py-10 sm:py-20 flex">
+            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 sm:py-30">
+                <div className="py-12 sm:py-20 flex">
                     <input
                         name="search"
                         type="email"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder="Enter Email for Printing Resquest"
-                        className="block border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
+                        className="block border-0 text-md lg:text-lg py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
                     />
                     <button
                         onClick={handleShowJobClick}
                         type="button"
-                        className="flex w-48 ml-4 justify-center rounded-full bg-primary px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        className="min-w-32 md:min-w-32 lg:min-w-48 ml-4 justify-center rounded-full bg-primary px-2 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     >
                         Show Print Jobs
                     </button>
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center text-center h-full mb-10">
-                <h2 className="font-bold mb-8 font-35">My Printing Jobs</h2>
+                <h2 className="font-bold mb-8 text-2xl md:text-3xl lg:text-4xl">My Printing Jobs</h2>
+
                 {printJobs.length > 0 ? (
                     printJobs.map(job => (
-                        <div className="min-w-full flex items-center px-4 pt-1 md:px-10 lg:px-40 mb-4">
-                            <div className="flex items-center w-full">
-                                <div className="bg-primary flex items-center justify-between flex-1 rounded-2xl mr-5 pl-5 pr-5">
-                                    <p className="flex font-bold font-20 items-center text-left h-14 text-white">
+                        <div className="w-full flex items-center px-4 pt-1 mb-4 md:px-8 lg:px-20">
+                            <div className="flex items-center justify-between w-full flex-nowrap">
+                                <div className="bg-primary flex items-center justify-between flex-1 rounded-2xl pl-5 pr-5 min-h-14 md:min-h-14 w-full">
+                                    <p className="font-bold text-lg md:text-xl lg:text-2xl text-left text-white flex items-center w-full">
                                         {job.files[0].name}
-                                        <span className="ml-1 mr-2">:</span>
+                                        <span className="mx-2">:</span>
                                         <span className="font-medium">{job.printNeed}</span>
                                     </p>
-                                    <p className="font-bold font-18 text-white">
-                                        {job.totalPrice ?
-                                            job.totalPrice
-                                            :
-                                            0
-                                        }</p>
+                                    <p className="font-bold text-lg md:text-xl lg:text-2xl text-white ml-4">
+                                        {job.totalPrice || 0}
+                                    </p>
                                 </div>
                                 {job.status === 'Pending' ? (
                                     <button
                                         onClick={() => handleJobClick(job.id)}
-                                        className="status-hover flex font-medium font-18 rounded-2xl items-center justify-center bg-primary h-14 text-white pl-5 pr-3 hover:bg-secondary cursor-pointer"
-                                        style={{ flex: 0.1 }}
+                                        className="flex font-medium text-sm md:text-lg rounded-2xl items-center justify-center bg-primary h-10 md:h-14 text-white px-4 ml-4 hover:bg-secondary cursor-pointer"
                                     >
                                         {job.status}
                                     </button>
                                 ) : (
-                                    <p
-                                        className="flex font-medium font-18 rounded-2xl items-center justify-center bg-primary h-14 text-white pl-3 pr-5"
-                                        style={{ flex: 0.1 }}
-                                    >
+                                    <p className="flex font-medium text-sm md:text-lg rounded-2xl items-center justify-center bg-primary h-10 md:h-14 text-white px-4 ml-4">
                                         {job.status}
                                     </p>
                                 )}
@@ -98,9 +92,11 @@ const MyPrintingJobs = () => {
                         </div>
                     ))
                 ) : (
-                    <p className="mt-5">No print jobs found for the given email.</p>
+                    <p className="mt-5 text-sm md:text-lg">No print jobs found for the given email.</p>
                 )}
             </div>
+
+
 
             {loading && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50" style={{ marginTop: 0 }}>

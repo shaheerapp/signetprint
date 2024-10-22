@@ -49,8 +49,8 @@ const CustomQuote = () => {
     return (
         <div className="bg-white">
             <NavBar />
-            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40 pb-5">
-                <div className="py-10 sm:py-20">
+            <div className="relative isolate px-2 pt-8 md:px-10 lg:px-40">
+                <div className="py-12 sm:py-20">
                     <a
                         href='/stores'
                     >
@@ -59,7 +59,7 @@ const CustomQuote = () => {
                             type="text"
                             readOnly
                             placeholder="Search for Printing stores / Areas"
-                            className="block cursor-pointer border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
+                            className="block text-md lg:text-lg cursor-pointer border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input"
                         />
                     </a>
                 </div>

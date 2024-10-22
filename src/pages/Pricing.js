@@ -1,22 +1,57 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import NavBar from '../components/NavBar';
 
 const Pricing = () => {
 
-    const handleBuyNowClick = (paystackLink) => {
-        window.location.href = paystackLink;
-    };
-    // basic test link: https://paystack.com/pay/2o9f7vhk92
-
-    // Plan prices in kobo (Naira) or cents for Paystack (amount should be multiplied by 100)
+    // Define the plans with their respective plan codes
     const plans = [
-        { name: 'Basic', price: 450, description: ['500 Print Jobs per month', 'Basic Print Jobs', 'Email Support'], link: 'https://paystack.com/pay/cagfddw61j' },
-        { name: 'Standard', price: 599, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support'], link: 'https://paystack.com/pay/nactjaak1y' },
-        { name: 'Enterprise', price: 949, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support', 'Key Metric Tracking'], link: 'https://paystack.com/pay/yzzx61yjyb' },
+        { name: 'Basic', price: 299, description: ['Basic Print Jobs', 'Email Support'], planCode: 'PLN_ue3cdzzdt5s7ds1' },
+        { name: 'Standard', price: 599, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support'], planCode: 'PLN_ml0cxtwht9bkwws' },
+        { name: 'Enterprise', price: 949, description: ['Unlimited Print Jobs', 'Customizable Print Jobs', 'Email Support', 'Key Metric Tracking'], planCode: 'PLN_mlziwjtoort71o1' },
     ];
+
+
+    const subaccount = 'ACCT_y1bc6aimcpyeoop';
+
+    const initializeTransaction = async (plan) => {
+        try {
+            const response = await fetch('https://api.paystack.co/transaction/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer sk_live_175c4cb1de422b556b365c7c33554ed5349d5d89` // Replace with your Paystack secret key
+                },
+                body: JSON.stringify({
+                    email: 'customer@example.com', // Replace with actual customer email
+                    amount: plan.price * 100, // Paystack requires the amount in kobo (Naira)
+                    subaccount,
+                    plan: plan.planCode,
+                    callback_url: 'https://signet-print.web.app/verify-payment',
+                })
+            });
+
+            const data = await response.json();
+            if (data.status) {
+                // Redirect to Paystack payment link
+                window.location.href = data.data.authorization_url;
+            } else {
+                console.error('Transaction initialization failed:', data.message);
+            }
+        } catch (error) {
+            console.error('Error initializing transaction:', error);
+        }
+    };
+
+
+    const handleSignUpNowClick = (plan) => {
+        initializeTransaction(plan);
+    };
 
     return (
         <div className="min-h-screen flex flex-col items-center py-10 " style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>
+            <NavBar />
+            <div className="py-7">
+            </div>
             <div className="mb-10">
                 <p className="font-bold text-4xl md:text-6xl">Pricing Tiers</p>
             </div>
@@ -34,9 +69,9 @@ const Pricing = () => {
                         <div className="flex justify-center items-center">
                             <button
                                 className="block btn-main text-white px-7 py-1.5 rounded-2xl text-center"
-                                onClick={() => handleBuyNowClick(plan.link)}
+                                onClick={() => handleSignUpNowClick(plan)}
                             >
-                                Buy Now
+                                Sign Up Now
                             </button>
                         </div>
                         <p className="font-medium text-black mt-8" style={{ fontSize: 24 }}>Includes:</p>

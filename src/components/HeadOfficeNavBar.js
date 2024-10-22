@@ -28,7 +28,7 @@ const HeadOfficeNavBar = () => {
         try {
             await signOut(auth); // Sign out the user
             localStorage.removeItem('user');
-            navigate('/'); // Redirect to the home page or login page
+            navigate('/', { replace: true }); // Redirect to the home page or login page
         } catch (error) {
             console.error('Error logging out:', error);
         }

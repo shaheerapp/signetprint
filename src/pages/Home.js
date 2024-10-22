@@ -7,6 +7,10 @@ import { db, storage } from '../firebase/firebaseConfig';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PDFDocument } from 'pdf-lib';
 import { Helmet } from 'react-helmet';
+import { useParams } from "react-router-dom";
+import * as XLSX from 'xlsx'; // Import xlsx for Excel file handling
+import jsPDF from 'jspdf'; // Import jsPDF for PDF generation
+
 
 
 const words = ["Priced...", "Printed...", "Paid..."];
@@ -23,15 +27,25 @@ const Home = () => {
     const [selectedOption, setSelectedOption] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [stores, setStores] = useState([]);
-    const location = useLocation();
-    const { selectedUser } = location.state || {};
+    const { storeName } = useParams();
     const navigate = useNavigate();
     const [isUploading, setIsUploading] = useState(false);
+    const [isOnlinePaid, setIsOnlinePaid] = useState(false);
 
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [currentText, setCurrentText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [cursorVisible, setCursorVisible] = useState(true);
+
+
+    useEffect(() => {
+        const paymentSuccess = localStorage.getItem('paymentSuccess');
+
+        if (paymentSuccess === 'true') { // Check if payment was successful
+            setIsOnlinePaid(true);
+            localStorage.removeItem('paymentSuccess');
+        }
+    }, []);
 
     useEffect(() => {
         const handleTyping = () => {
@@ -73,10 +87,10 @@ const Home = () => {
                     id: doc.id // Add this line to get the document ID
                 }));
                 setStores(storesList);
-                if (selectedUser) {
-                    const selectedStore = storesList.find(store => store.storeName === selectedUser);
+                if (storeName) {
+                    const selectedStore = storesList.find(store => store.storeName === storeName);
                     if (selectedStore) {
-                        setSelectedOption(selectedUser);
+                        setSelectedOption(storeName);
                         setStoreID(selectedStore.id);
                     }
                 }
@@ -84,7 +98,6 @@ const Home = () => {
                 console.error("Error fetching stores: ", error);
             }
         };
-
         fetchStores();
     }, []);
 
@@ -126,24 +139,105 @@ const Home = () => {
         setFileUrls(uploadedFiles);
     };
 
+    async function convertExcelToPDF(file) {
+        try {
+            const reader = new FileReader();
+            return new Promise((resolve, reject) => {
+                reader.onload = async (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Get the first worksheet
+                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Convert to JSON format
+
+                    const pdf = new jsPDF(); // Create a new PDF document
+
+                    // Iterate over JSON data to add to PDF
+                    json.forEach((row, index) => {
+                        const text = row.join(' | '); // Format row data as needed
+                        pdf.text(text, 10, 10 + (index * 10)); // Add text to the PDF
+                    });
+
+                    const pdfBlob = pdf.output('blob'); // Create a Blob from the PDF
+                    // Set the new PDF file name based on the original Excel file name
+                    pdfBlob.name = file.name.replace(/\.[^/.]+$/, "") + '.pdf'; // Change the extension to .pdf
+                    resolve(pdfBlob); // Resolve the promise with the PDF Blob
+                };
+
+                reader.onerror = (error) => {
+                    console.error('Error reading Excel file:', error);
+                    reject(error); // Reject the promise in case of an error
+                };
+
+                reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+            });
+        } catch (error) {
+            console.error('Error converting Excel to PDF:', error);
+            return null; // Return null in case of error
+        }
+    }
+
+
     const handleFileInput = async (event) => {
         setIsUploading(true);
         const files = event.target.files;
-        const validFileTypes = ['application/pdf'];
+        const validFileTypes = [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'image/jpeg', // JPEG image
+            'image/png', // PNG image
+        ];
 
-        const selectedFiles = await Promise.all(
-            Array.from(files)
-                .filter(file => validFileTypes.includes(file.type))
-                .map(async (file) => {
-                    const pageCount = await getPdfPageCount(file);
-                    return { file, pageCount }; // Return both file and pageCount
-                })
+        // Filter files to check for Excel files in advance
+        const excelFiles = Array.from(files).filter(file =>
+            file.type.includes("sheet") || file.type.includes("excel")
         );
 
-        setFileList(selectedFiles); // Now fileList includes both file and pageCount
-        await uploadFiles(selectedFiles);
-        setIsUploading(false);
+        // Alert if multiple Excel files are selected
+        if (excelFiles.length > 1) {
+            alert("You can only upload one Excel file at a time.");
+            setIsUploading(false);
+            return;
+        }
+
+
+        const selectedFiles = await Promise.all(
+            Array.from(files).map(async (file) => {
+                if (validFileTypes.includes(file.type)) {
+                    if (file.type === 'application/pdf') {
+                        const pageCount = await getPdfPageCount(file);
+                        return { file, pageCount }; // Return both file and pageCount for PDF
+                    }
+                    else if (file.type.includes("sheet") || file.type.includes("excel")) {
+
+                        const pageCount = prompt("Enter the number of pages you want to print for this Excel file. Tip: Save the Excel file as a PDF and check how many pages are produced.");
+
+                        // Validate the page count
+                        if (!pageCount || isNaN(pageCount) || pageCount <= 0) {
+                            alert("Invalid page count. Please enter a valid number.");
+                            return null;
+                        }
+
+                        return { file, pageCount: parseInt(pageCount) }; // Excel file with user-entered page count
+                    }
+                    else if (file.type.startsWith('image/')) {
+                        // For images, return the file with a page count of 1
+                        return { file, pageCount: 1 }; // Images count as 1 page
+                    }
+                }
+                return null; // Return null for unsupported file types
+            })
+        );
+
+        // Filter out null results and set fileList
+        const filteredFiles = selectedFiles.filter(file => file !== null);
+        setFileList(filteredFiles); // Now fileList includes both file and pageCount
+        await uploadFiles(filteredFiles); // Upload the files
+        setIsUploading(false); // Reset the uploading state
     };
+
+
+
 
     const handleDateClick = () => {
         document.getElementById('printNeed').showPicker();
@@ -208,15 +302,15 @@ const Home = () => {
                 <meta name="twitter:card" content="summary_large_image" />
             </Helmet>
             <NavBar />
-            <div className="relative isolate min-h-screen px-2 pt-8 md:px-10 lg:px-40 pb-5" style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>
-                <div className="py-10 sm:py-20">
+            <div className="relative isolate min-h-screen px-2 pt-8 md:px-10 lg:px-40" style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>
+                <div className="py-12 sm:py-20">
                     <a href='/stores'>
                         <input
                             name="search"
                             type="text"
                             readOnly
                             placeholder="Search for Printing stores / Areas"
-                            className="block cursor-pointer border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input w-full max-w-full mx-auto"
+                            className="block cursor-pointer text-md lg:text-lg border-0 py-1.5 pl-10 pr-20 text-black placeholder:text-gray-400 sm:leading-6 search-input w-full max-w-full mx-auto"
                         />
                     </a>
                 </div>
@@ -244,7 +338,7 @@ const Home = () => {
                                     onChange={(event) => setPrintNeed(event.target.value)}
                                     onClick={handleDateClick}
                                     placeholder="Date Needed By"
-                                    className="date-input block border-0 py-1.5 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full"
+                                    className="date-input block border-0 py-1.5 pl-7 pr-20 text-black placeholder:text-gray-400 sm:leading-6 w-full bg-white"
                                 />
                                 <div className="flex items-center space-x-3 cursor-pointer mt-6" onClick={toggleDropdown}>
                                     <div className="plus-icon rounded-full items-center justify-center flex" style={{ backgroundColor: COLORS.secondary }}>
@@ -302,7 +396,7 @@ const Home = () => {
                                     type="file"
                                     id="fileInput"
                                     multiple
-                                    accept="application/pdf"
+                                    accept=".pdf,.xlsx,.xls,image/*" // Accept PDF, Excel, and image files
                                     onChange={handleFileInput}
                                     style={{ display: 'none' }}
                                 />
@@ -336,6 +430,31 @@ const Home = () => {
                     </div>
                 </div>
             )}
+
+            {
+                isOnlinePaid &&
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50" style={{ marginTop: 0 }}>
+                    <div className="bg-white p-4 rounded-md shadow-lg ml-5 mr-5 text-center">
+                        <div className="cross-icon flex justify-end">
+                            <span
+                                onClick={() => setIsOnlinePaid(false)}
+                                className="cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke={COLORS.black} className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </span>
+
+                        </div>
+
+                        <p className="text-lg font-medium text-center">
+                            Thank you for your order! <br></br>
+                            We've received your PDF, email, and desired pickup date. You may come collect your order on the given pickup date.
+                        </p>
+
+                    </div>
+                </div>
+            }
         </div>
 
     );

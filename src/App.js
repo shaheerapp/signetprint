@@ -18,13 +18,16 @@ import ForgotPassword from './pages/ForgotPassword';
 import PrivateRoute from './firebase/PrivateRoute';
 import HeadOfficeChangeMyPricing from './pages/HeadOffice/HeadOfficeChangeMyPricing';
 import HeadOfficePastJobs from './pages/HeadOffice/HeadOfficePastJobs';
+import CompareShops from './pages/CompareShops';
+import VerifyPayment from './pages/VerifyPayment';
+import VerifyOnlinePayment from './pages/VerifyOnlinePayment';
 
 function App() {
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/:storeName?" element={<Home />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/register-print-shop" element={<RegisterPrintShop />} />
         <Route path="/print-options" element={<PrintOptions />} />
@@ -34,6 +37,11 @@ function App() {
         <Route path="/stores" element={<Stores />} />
         <Route path="/shop-login" element={<StoreLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path='/compare-shops' element={<CompareShops />} />
+        <Route path="/verify-payment" element={<VerifyPayment />} />
+        <Route path="/verify-online-payment" element={<VerifyOnlinePayment />} />
+
+
 
         {/* Protect admin routes with PrivateRoute */}
         <Route

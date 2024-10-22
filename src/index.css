@@ -24,7 +24,6 @@ code {
   box-shadow: 0px 0px 17.9px -2px rgba(0, 0, 0, 0.25);
   padding: 10px 20px;
   border-radius: 29px;
-  font-size: 20px;
   width: 100%;
   border-width: 0;
   outline: none;
@@ -46,7 +45,6 @@ code {
   padding: 10px 20px;
   border-radius: 29px;
   border: 3px solid #05b49b;
-  font-size: 20px;
   width: 100%;
   outline: none;
   transition: box-shadow 0.3s ease;
@@ -82,6 +80,10 @@ code {
     width: 100%; /* Set width to a percentage to ensure it fits within small screens */
     max-width: 440px; /* Optional: limit maximum width on small screens */
     height: 550px; /* Allow height to adjust based on content */
+  }
+  .upload-files-container-second {
+    width: 90%; /* Adjust this value to your preference */
+    max-width: 380px; /* Optional: set a maximum width for small devices */
   }
 }
 
@@ -282,15 +284,16 @@ code {
 }
 
 .bg-grey {
-  background: #bfbfbf;
+  background: #747474;
   color: white;
   padding-left: 10px;
   padding-right: 10px;
   border-radius: 10px;
   align-items: center;
   display: flex;
-  height: 30px;
-  overflow: hidden;
+  min-height: 30px;
+  max-height: 90px;
+  overflow: auto;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -462,4 +465,17 @@ code {
 
 .cursor.invisible {
   visibility: hidden;
+}
+
+/* Default Flexbox Layout (for desktop) */
+.parent-container {
+  display: flex;
+  flex-direction: column; /* Default: Column layout */
+}
+
+/* Mobile View: Arrange the print-details-container at the bottom */
+@media screen and (max-width: 768px) {
+  .parent-container {
+    flex-direction: column-reverse; /* Move the print details container to the bottom */
+  }
 }

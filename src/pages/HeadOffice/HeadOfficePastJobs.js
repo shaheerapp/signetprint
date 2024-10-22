@@ -10,6 +10,7 @@ const HeadOfficePastJobs = () => {
     const [user, setUser] = useState([]);
     const [jobs, setJobs] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
@@ -24,6 +25,7 @@ const HeadOfficePastJobs = () => {
     // Fetch print requests based on user ID
     const fetchPrintRequests = async () => {
         if (user?.id) {
+            setLoading(true);
             try {
                 // Reference to the print_requests collection
                 const q = query(
@@ -41,6 +43,8 @@ const HeadOfficePastJobs = () => {
                 setJobs(fetchedJobs);
             } catch (error) {
                 console.error('Error fetching print requests:', error);
+            } finally {
+                setLoading(false); // Stop loading after fetch is complete
             }
         }
     };
@@ -73,16 +77,14 @@ const HeadOfficePastJobs = () => {
             return 0;
         });
     return (
-        <div className='bg-white'>
+        <div className='bg-white min-h-screen'>
             <HeadOfficeNavBar />
-            <div className='px-2 pt-6 md:px-10 lg:px-40 pb-5'>
-                <div className="py-10 sm:py-16">
+            <div className='px-2 pt-6 md:px-10 lg:px-40 pb-5 min-h-screen flex flex-col'>
+                <div className="py-10 sm:py-16 flex-1 flex flex-col">
                     <h2 className='text-black font-bold font-35'>Closed Jobs</h2>
                     <div className='mt-4 flex items-center space-x-6'>
                         <h2 className='text-black font-medium font-20'>New Jobs</h2>
-                        <div
-                            className='flex items-center space-x-2'
-                        >
+                        <div className='flex items-center space-x-2'>
                             <button
                                 className='sort-by pt-1 pb-1 pl-4 pr-4 rounded-md'
                             >
@@ -96,10 +98,17 @@ const HeadOfficePastJobs = () => {
                             </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-14 mt-4">
-                        {
-                            filteredJobs.length > 0 ? (
-                                filteredJobs.map((job, index) => (
+                    {loading ? (
+                        // Display loading spinner/message while fetching jobs
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+                            <div className="bg-white p-4 rounded-md shadow-lg">
+                                <p className="text-lg font-semibold">Loading...</p>
+                            </div>
+                        </div>
+                    ) :
+                        filteredJobs.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-14 mt-4">
+                                {filteredJobs.map((job, index) => (
                                     <div key={index} className={`relative p-4 rounded-3xl bg-primary`}>
                                         <p className="font-25 text-white font-bold">{job.files[0].name}</p>
                                         <div className='horizontal-divider' />
@@ -119,10 +128,11 @@ const HeadOfficePastJobs = () => {
                                             <p className="font-18 text-white font-medium">Cost:</p>
                                             <p className="font-18 text-white font-bold">R {job.totalPrice}</p>
                                         </div>
-
-                                        <div
-                                            className='flex items-center mt-2 space-x-1'
-                                        >
+                                        <div className='flex items-center mt-2 space-x-1'>
+                                            <p className="font-18 text-white font-medium">Payment Reference:</p>
+                                            <p className="font-18 text-white font-bold">{job.paymentReference ? job.paymentReference + " (Online)" : "Pay In Store"}</p>
+                                        </div>
+                                        <div className='flex items-center mt-2 space-x-1'>
                                             <div className='flex flex-1 items-center justify-center'>
                                                 <button
                                                     className="bg-white flex-0.5 font-18 text-black font-bold rounded-2xl pl-4 pr-4 pt-1 pb-1 text-center"
@@ -133,20 +143,21 @@ const HeadOfficePastJobs = () => {
                                             </div>
                                         </div>
                                     </div>
-                                ))
-                            )
-                                :
-                                <div
-                                    className='flex-1 items-center justify-center'
-                                >
-                                    <h2 className='text-black font-bold font-35'>No jobs found</h2>
-                                </div>
-                        }
-                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className='flex-1 flex items-center justify-center'>
+                                <h2 className='text-black font-bold font-35'>No jobs found</h2>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>
     )
 }
-
+{/* <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50" style={{ marginTop: 0 }}>
+<div className="bg-white p-4 rounded-md shadow-lg">
+    <p className="text-lg font-semibold">Loading...</p>
+</div>
+</div> */}
 export default HeadOfficePastJobs;

@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "print-hub-4es1ey"
-  }
+    "main": "print-hub-4es1ey",
+    "testsignet": "signet-print"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

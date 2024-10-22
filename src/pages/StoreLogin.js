@@ -39,11 +39,12 @@ const StoreLogin = () => {
                     address: userData.address,  // Retrieve from Firestore userData
                     storeName: userData.storeName,
                     phoneNumber: userData.phoneNumber,
-                    pricing: userData.pricing
+                    pricing: userData.pricing,
+                    buildingPlanPricing: userData.buildingPlanPricing
                 }));
 
                 console.log('Logged In Successfully');
-                navigate('/admin/dashboard'); // Navigate to the admin dashboard
+                navigate('/admin/dashboard', { replace: true }); // Navigate to the admin dashboard
             } else {
                 setError('No such user found in the database!');
                 setIsLoging(false);

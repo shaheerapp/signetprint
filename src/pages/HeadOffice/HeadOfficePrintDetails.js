@@ -62,7 +62,7 @@ const HeadOfficePrintDetails = () => {
 
 
     return (
-        <div className='bg-white'>
+        <div className='bg-white min-h-screen'>
             <HeadOfficeNavBar />
             <div className='px-2 pt-6 md:px-10 lg:px-40 pb-5'>
                 <div className="py-30 sm:py-28">
@@ -80,7 +80,7 @@ const HeadOfficePrintDetails = () => {
                                     <thead>
                                         <tr className="table-header-b">
                                             <th className="py-2 px-4 w-1/1">Product</th>
-                                            <th className="py-2 px-4 w-1/6">Price</th>
+                                            <th className="py-2 px-4 w-1/7">Price</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -88,9 +88,11 @@ const HeadOfficePrintDetails = () => {
                                             job.files.map((file, index) => (
                                                 <tr key={index}>
                                                     <td className="py-2 px-4">
-                                                        <div className="flex items-center justify-center space-x-3">
-                                                            <p className="bg-grey text-lg flex-1 pr-4 pl-4 overflow-hidden">{file.name}</p>
-                                                            <p className="bg-grey text-sm flex-1">{file.paperSize}, {file.colour}, {file.quantity} Copies</p>
+                                                        <div className="flex items-center justify-center space-x-3 overflow-auto">
+                                                            <p className="bg-grey text-lg flex-1 pr-4 pl-4"
+                                                                style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+                                                            >{file.name}</p>
+                                                            <p className="bg-grey text-sm flex-3">{file.paperSize}, {file.colour}, {file.printType}, {file.paperThickness}, Binding: {file.binding}, {file.quantity} Copies</p>
                                                             <a
                                                                 href={file.url}
                                                                 download={file.name}
@@ -103,7 +105,7 @@ const HeadOfficePrintDetails = () => {
                                                             </a>
                                                         </div>
                                                     </td>
-                                                    <td className="py-2 px-4">R {file.price}</td>
+                                                    <td className="py-2 px-2">R {file.price}</td>
                                                 </tr>
                                             ))
                                         ) : null}

@@ -4,7 +4,7 @@ import { COLORS } from '../../utils/theme';
 
 const HeadOfficeMyPricing = () => {
     const [expandedRow, setExpandedRow] = useState(null);
-    const [user, setUser] = useState({ pricing: [] });
+    const [user, setUser] = useState({ pricing: [], buildingPlanPricing: [] });
 
     const toggleExpand = (index) => {
         setExpandedRow(expandedRow === index ? null : index);
@@ -79,31 +79,57 @@ const HeadOfficeMyPricing = () => {
                                                 {range.price}
                                             </td>
                                         ))}
-                                        {/* <td className="py-2 px-4 relative">
-                                            <div
-                                                onClick={() => toggleExpand(index)}
-                                                className={`w-28 relative cursor-pointer text-center text-white rounded-t-xl bg-primary font-bold text-lg ${expandedRow !== index ? 'rounded-b-xl' : ''}`}
-                                                style={{ height: '30px', lineHeight: '30px' }}
-                                            >
-                                                <p>Edit</p>
-                                                <div
-                                                    className={`absolute left-0 top-0 z-50 w-full bg-primary shadow-lg rounded-b-lg overflow-hidden transition-all duration-300 ease-out ${expandedRow === index ? 'max-h-40' : 'max-h-0'
-                                                        }`}
-                                                    style={{ top: '100%', transition: 'max-height 0.3s ease-out' }}
-                                                >
-                                                    <button className="w-[90%] font-medium text-center text-white pt-1 edit-border-top text-sm">Delete Row</button>
-                                                    <button className="w-[90%] font-medium text-center text-white pt-1 edit-border-top text-sm">Out of Stock</button>
-                                                    <button className="w-[90%] font-medium text-center text-white pt-1 mb-2 edit-border-top edit-border-bottom text-sm">Edit Row</button>
-                                                </div>
-                                            </div>
-                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>
 
                         </table>
                     </div>
+                    <div className='flex items-baseline justify-between mt-8'>
+                        <h2 className='text-black font-bold text-2xl'>Building Plan Pricing</h2>
+                        <a
+                            href='#'
+                            className="w-44 pt-1 pb-1 rounded-md items-center justify-center flex"
+                            style={{ backgroundColor: COLORS.secondary }}
+                        >
+                            <p className='text-white ml-1 font-bold'>Change Pricing</p>
+                        </a>
+                    </div>
+                    <div className='mt-5'>
+                        {/* Table */}
+                        <table className="min-w-full bg-white text-left">
+                            <thead>
+                                <tr>
+                                    <th className="py-2 px-4 w-1/1">Paper Size</th>
+                                    <th className="py-2 px-4 w-1/3">Type</th>
+                                    <th className="py-2 px-4 w-1/3">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {user.buildingPlanPricing.map((item, index) => (
+                                    item.sizes.map((sizeItem, sizeIndex) => (
+                                        <tr key={`${index}-${sizeIndex}`} className='table-header-b'>
+                                            <td className="py-2 px-4">
+                                                <div
+                                                    className="w-36 flex items-center justify-center rounded-xl pl-3 pr-3"
+                                                    style={{ backgroundColor: '#D9D9D9' }}
+                                                >
+                                                    <p className="text-lg flex-1 mr-4 text-center">
+                                                        {sizeItem.size}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td className="py-2 px-4">{item.type}</td>
+                                            <td className="py-2 px-4">
+                                                {sizeItem.price}
+                                            </td>
+                                        </tr>
+                                    ))
+                                ))}
+                            </tbody>
 
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

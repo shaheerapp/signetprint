@@ -8,6 +8,7 @@ const navigation = [
     { name: 'List your Print Shop', href: '/pricing' },
     { name: 'Shop Login', href: '/shop-login' },
     { name: 'My Printing Jobs', href: '/printing-jobs' },
+    { name: 'Compare Shops', href: '/compare-shops' }
 ]
 
 const NavBar = () => {

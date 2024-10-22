@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IMAGES } from '../utils/images';
 import { auth, db } from '../firebase/firebaseConfig'; // import your firebase setup
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+
 
 const RegisterPrintShop = () => {
     const [formData, setFormData] = useState({
@@ -11,11 +13,40 @@ const RegisterPrintShop = () => {
         address: '',
         phoneNumber: '',
         email: '',
+        bankName: '',
+        accountNumbr: '',
         password: '',
         confirmPassword: ''
     });
     const [isRegistering, setIsRegistering] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const [banks, setBanks] = useState([]);
+    const { paymentSuccessful } = location.state || {};
+    const payStackLiveKey = "sk_live_175c4cb1de422b556b365c7c33554ed5349d5d89";
+    const payStackTestKey = "sk_test_6387dfc884da169e373d841492096eaa2ed84b2f";
+
+
+    useEffect(() => {
+        const fetchBanks = async () => {
+            try {
+                const response = await axios.get('https://api.paystack.co/bank', {
+                    params: {
+                        country: 'south africa'
+                    },
+                    headers: {
+                        Authorization: `Bearer ${payStackLiveKey}`  // Replace with your Paystack secret key
+                    }
+                });
+
+                setBanks(response.data.data);
+            } catch (error) {
+                console.error('Error fetching banks:', error);
+            }
+        };
+
+        fetchBanks();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({
@@ -43,6 +74,28 @@ const RegisterPrintShop = () => {
                 return;
             }
 
+            // Step 1: Create Subaccount via Paystack
+            const subaccountData = {
+                business_name: formData.storeName,
+                settlement_bank: formData.bankName,
+                account_number: formData.accountNumbr,
+                percentage_charge: 0
+            };
+
+            const subaccountResponse = await axios.post('https://api.paystack.co/subaccount', subaccountData, {
+                headers: {
+                    Authorization: `Bearer ${payStackTestKey}`,  // Replace with your Paystack secret key
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (subaccountResponse.data.status !== true) {
+                alert('Bank Account not created');
+                return;
+            }
+
+            const subaccountCode = subaccountResponse.data.data.subaccount_code;
+
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 formData.email,
@@ -50,6 +103,25 @@ const RegisterPrintShop = () => {
             );
             const user = userCredential.user;
 
+
+            const defaultBuildingPlanTable = [
+                {
+                    type: "B/W",
+                    sizes: [
+                        { size: "A2", price: 40 },
+                        { size: "A1", price: 50 },
+                        { size: "A0", price: 65 }
+                    ]
+                },
+                {
+                    type: "Color",
+                    sizes: [
+                        { size: "A2", price: 55 },
+                        { size: "A1", price: 70 },
+                        { size: "A0", price: 110 }
+                    ]
+                }
+            ];
             const defaultPricingTable = [
                 {
                     "id": 1,
@@ -165,7 +237,11 @@ const RegisterPrintShop = () => {
                 address: formData.address,
                 phoneNumber: formData.phoneNumber,
                 email: formData.email,
-                pricing: defaultPricingTable
+                bankName: formData.bankName,
+                accountNumbr: formData.accountNumbr,
+                subaccountCode: subaccountCode,
+                pricing: defaultPricingTable,
+                buildingPlanPricing: defaultBuildingPlanTable,
             });
             navigate('/shop-login');
         } catch (error) {
@@ -179,6 +255,12 @@ const RegisterPrintShop = () => {
     const handleBack = () => {
         navigate('/'); // Go back to the previous page
     };
+
+    useEffect(() => {
+        if (!paymentSuccessful) {
+            navigate('/');
+        }
+    }, []);
 
     return (
         <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8" style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)', height: '100%' }}>
@@ -260,7 +342,57 @@ const RegisterPrintShop = () => {
                             />
                         </div>
                     </div>
+                    <div>
+                        <label htmlFor="bankName" className="block text-sm font-medium leading-6 text-gray-900">
+                            Bank Name
+                        </label>
+                        <div className="relative">
+                            <select
+                                id="bankName"
+                                name="bankName"
+                                value={formData.bankName}
+                                onChange={handleChange}
+                                required
+                                className="appearance-none px-2 pr-3 block w-full outline-none rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:bg-primary sm:text-sm sm:leading-6"
+                            >
+                                <option value="" disabled>Select a bank</option>
+                                {
+                                    banks.map((bank) => (
+                                        <option
+                                            key={bank.code}
+                                            value={bank.code}
+                                        >
+                                            {bank.name}
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                            {/* Custom arrow */}
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+                                    <path d="M7 7l3-3 3 3M7 13l3 3 3-3" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div>
+                        <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                            Account Number
+                        </label>
+                        <div>
+                            <input
+                                id="accountNumbr"
+                                name="accountNumbr"
+                                type="text"
+                                value={formData.accountNumbr}
+                                onChange={handleChange}
+                                required
+                                autoComplete="accountNumbr"
+                                className="px-2 block w-full outline-none rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:bg-primary sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div>
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                             Password
