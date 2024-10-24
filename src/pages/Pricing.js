@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import NavBar from '../components/NavBar';
+import axios from 'axios';
+
 
 const Pricing = () => {
 
@@ -26,7 +28,7 @@ const Pricing = () => {
                     amount: plan.price * 100, // Paystack requires the amount in kobo (Naira)
                     subaccount,
                     plan: plan.planCode,
-                    callback_url: 'https://signet-print.web.app/verify-payment',
+                    callback_url: 'https://signetprint.co.za/verify-payment',
                 })
             });
 
@@ -46,6 +48,8 @@ const Pricing = () => {
     const handleSignUpNowClick = (plan) => {
         initializeTransaction(plan);
     };
+
+
 
     return (
         <div className="min-h-screen flex flex-col items-center py-10 " style={{ background: 'linear-gradient(270deg, #00FFDB 0%, #F7F7F7 100%)' }}>

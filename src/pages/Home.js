@@ -139,43 +139,6 @@ const Home = () => {
         setFileUrls(uploadedFiles);
     };
 
-    async function convertExcelToPDF(file) {
-        try {
-            const reader = new FileReader();
-            return new Promise((resolve, reject) => {
-                reader.onload = async (e) => {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Get the first worksheet
-                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Convert to JSON format
-
-                    const pdf = new jsPDF(); // Create a new PDF document
-
-                    // Iterate over JSON data to add to PDF
-                    json.forEach((row, index) => {
-                        const text = row.join(' | '); // Format row data as needed
-                        pdf.text(text, 10, 10 + (index * 10)); // Add text to the PDF
-                    });
-
-                    const pdfBlob = pdf.output('blob'); // Create a Blob from the PDF
-                    // Set the new PDF file name based on the original Excel file name
-                    pdfBlob.name = file.name.replace(/\.[^/.]+$/, "") + '.pdf'; // Change the extension to .pdf
-                    resolve(pdfBlob); // Resolve the promise with the PDF Blob
-                };
-
-                reader.onerror = (error) => {
-                    console.error('Error reading Excel file:', error);
-                    reject(error); // Reject the promise in case of an error
-                };
-
-                reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
-            });
-        } catch (error) {
-            console.error('Error converting Excel to PDF:', error);
-            return null; // Return null in case of error
-        }
-    }
-
 
     const handleFileInput = async (event) => {
         setIsUploading(true);
@@ -270,6 +233,7 @@ const Home = () => {
                     customer_email: emailAddress,
                     printNeed: printNeed,
                     storeID: storeID,
+                    storeName: selectedOption,
                     createdAt: new Date(),
                     status: 'Pending',
                 });

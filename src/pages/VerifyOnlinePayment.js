@@ -23,7 +23,7 @@ const VerifyOnlinePayment = () => {
             const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer sk_test_6387dfc884da169e373d841492096eaa2ed84b2f`, // Replace with your Paystack secret key
+                    Authorization: `Bearer sk_live_175c4cb1de422b556b365c7c33554ed5349d5d89`, // Replace with your Paystack secret key
                 },
             });
 

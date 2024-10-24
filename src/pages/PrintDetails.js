@@ -69,14 +69,14 @@ const PrintDetails = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer sk_test_6387dfc884da169e373d841492096eaa2ed84b2f`
+                        Authorization: `Bearer sk_live_175c4cb1de422b556b365c7c33554ed5349d5d89`
                     },
                     body: JSON.stringify({
                         email: emailAddress,     // Customer email
                         amount: totalPrice * 100, // Amount in Kobo (ZAR * 100)
                         subaccount: subAccountCode,
                         currency: 'ZAR',
-                        callback_url: `https://signet-print.web.app/verify-online-payment?printRequestId=${printRequestId}`,
+                        callback_url: `https://signetprint.co.za/verify-online-payment?printRequestId=${printRequestId}`,
                     })
                 });
 

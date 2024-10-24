@@ -84,7 +84,7 @@ const RegisterPrintShop = () => {
 
             const subaccountResponse = await axios.post('https://api.paystack.co/subaccount', subaccountData, {
                 headers: {
-                    Authorization: `Bearer ${payStackTestKey}`,  // Replace with your Paystack secret key
+                    Authorization: `Bearer ${payStackLiveKey}`,  // Replace with your Paystack secret key
                     'Content-Type': 'application/json'
                 }
             });
