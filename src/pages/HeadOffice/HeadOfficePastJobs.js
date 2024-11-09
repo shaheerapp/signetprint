@@ -69,7 +69,7 @@ const HeadOfficePastJobs = () => {
     };
 
     const filteredJobs = jobs
-        .filter(job => job.status === 'Closed')
+        .filter(job => job.status === 'Closed' || job.status === 'Completed')
         .sort((a, b) => {
             // Sort by `createdAt` in descending order
             if (a.createdAt < b.createdAt) return 1;
